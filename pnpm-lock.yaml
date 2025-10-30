@@ -14,6 +14,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.77.0
         version: 2.77.0
+      '@vis.gl/react-google-maps':
+        specifier: ^1.6.1
+        version: 1.6.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       next:
         specifier: 16.0.1
         version: 16.0.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -442,6 +445,9 @@ packages:
   '@tailwindcss/postcss@4.1.16':
     resolution: {integrity: sha512-Qn3SFGPXYQMKR/UtqS+dqvPrzEeBZHrFA92maT4zijCVggdsXnDBMsPFJo1eArX3J+O+Gi+8pV4PkqjLCNBk3A==}
 
+  '@types/google.maps@3.58.1':
+    resolution: {integrity: sha512-X9QTSvGJ0nCfMzYOnaVs/k6/4L+7F5uCS+4iUmkLEls6J9S/Phv+m/i3mDeyc49ZBgwab3EFO1HEoBY7k98EGQ==}
+
   '@types/node@20.19.24':
     resolution: {integrity: sha512-FE5u0ezmi6y9OZEzlJfg37mqqf6ZDSF2V/NLjUyGrR9uTZ7Sb9F7bLNZ03S4XVUNRWGA7Ck4c1kK+YnuWjl+DA==}
 
@@ -458,6 +464,12 @@ packages:
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
+
+  '@vis.gl/react-google-maps@1.6.1':
+    resolution: {integrity: sha512-y9qI1m8E5Zn55xh+J5MM1kdFLEE/ttOF2bOFLVd99TiKBYUNwG6doOC1JEc6lf7Zum2MT3GQ9aeEOAPzukRLxA==}
+    peerDependencies:
+      react: '>=16.8.0 || ^19.0 || ^19.0.0-rc'
+      react-dom: '>=16.8.0 || ^19.0 || ^19.0.0-rc'
 
   amazon-cognito-identity-js@6.3.15:
     resolution: {integrity: sha512-G2mzTlGYHKYh9oZDO0Gk94xVQ4iY9GYWBaYScbDYvz05ps6dqi0IvdNx1Lxi7oA3tjS5X+mUN7/svFJJdOB9YA==}
@@ -495,6 +507,9 @@ packages:
 
   fast-base64-decode@1.0.0:
     resolution: {integrity: sha512-qwaScUgUGBYeDNRnbc/KyllVU88Jk1pRHPStuF/lO7B0/RTRLj7U0lkdTAutlBblY08rwZDff6tNU9cjv6j//Q==}
+
+  fast-deep-equal@3.1.3:
+    resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
@@ -1045,6 +1060,8 @@ snapshots:
       postcss: 8.5.6
       tailwindcss: 4.1.16
 
+  '@types/google.maps@3.58.1': {}
+
   '@types/node@20.19.24':
     dependencies:
       undici-types: 6.21.0
@@ -1062,6 +1079,13 @@ snapshots:
   '@types/ws@8.18.1':
     dependencies:
       '@types/node': 20.19.24
+
+  '@vis.gl/react-google-maps@1.6.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      '@types/google.maps': 3.58.1
+      fast-deep-equal: 3.1.3
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   amazon-cognito-identity-js@6.3.15:
     dependencies:
@@ -1099,6 +1123,8 @@ snapshots:
       tapable: 2.3.0
 
   fast-base64-decode@1.0.0: {}
+
+  fast-deep-equal@3.1.3: {}
 
   graceful-fs@4.2.11: {}
 
