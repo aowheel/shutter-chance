@@ -9,7 +9,6 @@ import {
 import Image from "next/image";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
 
 const hamamatsuBounds = {
   south: 34.525,
@@ -23,8 +22,6 @@ type LatLngLiteral = {
   lat: number;
   lng: number;
 };
-
-const STORAGE_BUCKET = "photos";
 
 const genders = ["男性", "女性"] as const;
 const ageGroups = ["10代", "20代", "30代", "40代", "50代", "60代"] as const;
@@ -69,7 +66,6 @@ const formatTime = (seconds: number) => {
 
 export default function PhotoCapturePage() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
-  const supabase = useMemo(() => createClient(), []);
   const [currentLocation, setCurrentLocation] = useState<LatLngLiteral>();
   const [locationError, setLocationError] = useState(false);
   const [selectedLocation, setSelectedLocation] =
@@ -186,75 +182,16 @@ export default function PhotoCapturePage() {
     setIsUploading(true);
     setUploadError(null);
 
-    const fileExt = selectedFile.name.split(".").pop() ?? "jpg";
-    const fileName = `${crypto.randomUUID()}.${fileExt}`;
-    const folder = `${selectedLocation.lat.toFixed(5)}_${selectedLocation.lng.toFixed(5)}`;
-    const filePath = `${folder}/${fileName}`;
-
-    const commentContent = comment.trim();
-    const commentFilePath =
-      commentContent.length > 0
-        ? `${folder}/${fileName.replace(/\.[^/.]+$/, "")}.txt`
-        : null;
-    const pathsToCleanup: string[] = [];
-
+    // デモモード: 画像のプレビューURLを作成
     try {
-      const { error: uploadErrorResult } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .upload(filePath, selectedFile, {
-          contentType: selectedFile.type,
-          upsert: false,
-        });
-
-      if (uploadErrorResult) {
-        throw new Error(uploadErrorResult.message);
-      }
-      pathsToCleanup.push(filePath);
-
-      if (commentFilePath) {
-        const commentBlob = new Blob([commentContent], {
-          type: "text/plain;charset=utf-8",
-        });
-
-        const { error: commentUploadError } = await supabase.storage
-          .from(STORAGE_BUCKET)
-          .upload(commentFilePath, commentBlob, {
-            contentType: "text/plain",
-            upsert: false,
-          });
-
-        if (commentUploadError) {
-          throw new Error(commentUploadError.message);
-        }
-        pathsToCleanup.push(commentFilePath);
-      }
-
-      let accessibleUrl: string | null = null;
-      const { data: signedUrlData, error: signedUrlError } =
-        await supabase.storage
-          .from(STORAGE_BUCKET)
-          .createSignedUrl(filePath, 60 * 60 * 24 * 7);
-
-      if (!signedUrlError && signedUrlData?.signedUrl) {
-        accessibleUrl = signedUrlData.signedUrl;
-      } else {
-        const { data: publicUrlData } = supabase.storage
-          .from(STORAGE_BUCKET)
-          .getPublicUrl(filePath);
-        if (publicUrlData?.publicUrl) {
-          accessibleUrl = publicUrlData.publicUrl;
-        }
-      }
-
-      if (!accessibleUrl) {
-        throw new Error("画像URLの取得に失敗しました。");
-      }
+      const imageUrl = URL.createObjectURL(selectedFile);
+      const commentContent = comment.trim();
 
       setUploadedEntries((previous) => [
         ...previous,
         {
-          id: filePath,
-          imageUrl: accessibleUrl,
+          id: crypto.randomUUID(),
+          imageUrl: imageUrl,
           comment: commentContent,
           location: { ...selectedLocation },
         },
@@ -268,9 +205,6 @@ export default function PhotoCapturePage() {
       setTimerSeconds(null);
       setDemographicCounts(createInitialCounts());
     } catch (error) {
-      if (pathsToCleanup.length > 0) {
-        await supabase.storage.from(STORAGE_BUCKET).remove(pathsToCleanup);
-      }
       const message =
         error instanceof Error
           ? error.message
@@ -279,7 +213,7 @@ export default function PhotoCapturePage() {
     } finally {
       setIsUploading(false);
     }
-  }, [comment, selectedFile, selectedLocation, supabase]);
+  }, [comment, selectedFile, selectedLocation]);
 
   const handleIncrement = useCallback(
     (gender: Gender, ageGroup: AgeGroup) => {
@@ -450,7 +384,7 @@ export default function PhotoCapturePage() {
                     />
                   </div>
                   <div className="flex flex-1 flex-col gap-2 px-3 pb-3 pt-2">
-                    <p className="whitespace-pre-wrap break-words text-sm text-neutral-700">
+                    <p className="whitespace-pre-wrap wrap-break-word text-sm text-neutral-700">
                       {entry.comment.length > 0
                         ? entry.comment
                         : "コメントなし"}
